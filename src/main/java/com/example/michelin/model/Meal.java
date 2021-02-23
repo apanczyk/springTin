@@ -12,9 +12,11 @@ public class Meal {
     private String description;
 
 
-    public Meal() {
-        this.name = "Lasagne";
-        this.description = "Yummy";
+    public Meal() { }
+
+    public Meal(String name, String description) {
+        this.name = name;
+        this.description = description;
     }
 
     public Integer getId() {

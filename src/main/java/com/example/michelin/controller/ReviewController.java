@@ -4,27 +4,53 @@ import com.example.michelin.model.Review;
 import com.example.michelin.repository.ReviewRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
-import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.ResponseBody;
+import org.springframework.web.bind.annotation.*;
 
 @Controller
-@RequestMapping("/reviews")
+@RequestMapping("api/reviews")
 public class ReviewController {
     @Autowired
     private ReviewRepository reviewRepository;
 
     @GetMapping()
     public @ResponseBody
-    Iterable<Review> getAllReviews(){
+    Iterable<Review> getReviews(){
         return reviewRepository.findAll();
     }
 
     @PostMapping()
-    public @ResponseBody Review addNewReview(){
-        Review newMeal = new Review();
-        reviewRepository.save(newMeal);
-        return newMeal;
+    public @ResponseBody
+    Review createReview(@RequestBody Review newVisitor){
+        return reviewRepository.save(newVisitor);
+    }
+
+    @GetMapping("/{id}")
+    public @ResponseBody
+    Review getReviewById(@PathVariable Integer id) {
+        return reviewRepository.findById(id)
+                .orElseThrow();
+    }
+
+    @PutMapping("/{id}")
+    public @ResponseBody
+    Review updateReview(@PathVariable Integer id, @RequestBody Review updateReview) {
+        return reviewRepository.findById(id)
+                .map(review -> {
+                    review.setRate(updateReview.getRate());
+                    review.setDate(updateReview.getDate());
+                    review.setMessage(updateReview.getMessage());
+                    review.setVisitor(updateReview.getVisitor());
+                    review.setMeal(updateReview.getMeal());
+                    return reviewRepository.save(review);
+                }).orElseGet(() -> {
+                    updateReview.setId(id);
+                    return reviewRepository.save(updateReview);
+                });
+    }
+
+    @DeleteMapping("/{id}")
+    public @ResponseBody
+    void deleteReview(@PathVariable Integer id) {
+        reviewRepository.deleteById(id);
     }
 }
