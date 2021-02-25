@@ -6,15 +6,16 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping(path = "api/visitors")
 public class VisitorController {
     @Autowired
     private VisitorRepository visitorRepository;
 
     @GetMapping()
-    public @ResponseBody
-    Iterable<Visitor> getVisitors(){
+    public List<Visitor> getVisitors(){
         return visitorRepository.findAll();
     }
 

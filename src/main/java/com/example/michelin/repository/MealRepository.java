@@ -1,7 +1,7 @@
 package com.example.michelin.repository;
 
 import com.example.michelin.model.Meal;
-import org.springframework.data.repository.CrudRepository;
+import org.springframework.data.jpa.repository.JpaRepository;
 
-public interface MealRepository extends CrudRepository<Meal, Integer> {
+public interface MealRepository extends JpaRepository<Meal, Integer> {
 }

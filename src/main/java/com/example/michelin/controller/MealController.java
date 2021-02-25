@@ -6,7 +6,9 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
-@Controller
+import java.util.List;
+
+@RestController
 @RequestMapping(path="api/meals")
 public class MealController {
 
@@ -14,8 +16,7 @@ public class MealController {
     private MealRepository mealRepository;
 
     @GetMapping()
-    public @ResponseBody
-    Iterable<Meal> getMeals(){
+    public List<Meal> getMeals(){
         return mealRepository.findAll();
     }
 
