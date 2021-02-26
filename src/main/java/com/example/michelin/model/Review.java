@@ -79,5 +79,4 @@ public class Review {
         this.visitor = visitor;
     }
 
-
 }

@@ -1,6 +1,8 @@
 package com.example.michelin.controller;
 
+import com.example.michelin.dto.VisitorReturnDto;
 import com.example.michelin.model.Visitor;
+import com.example.michelin.repository.ReviewRepository;
 import com.example.michelin.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
@@ -12,6 +14,8 @@ import java.util.List;
 public class VisitorController {
     @Autowired
     private VisitorRepository visitorRepository;
+    @Autowired
+    private ReviewRepository reviewRepository;
 
     @GetMapping()
     public List<Visitor> getVisitors(){
@@ -19,20 +23,24 @@ public class VisitorController {
     }
 
     @PostMapping()
-    public @ResponseBody
-    Visitor createVisitor(@RequestBody Visitor newVisitor){
+    public Visitor createVisitor(@RequestBody Visitor newVisitor){
         return visitorRepository.save(newVisitor);
     }
 
     @GetMapping("/{id}")
-    public Visitor getVisitorById(@PathVariable Integer id) {
-        return visitorRepository.findById(id)
-                .orElseThrow();
+    public VisitorReturnDto getVisitorById(@PathVariable Integer id) {
+        VisitorReturnDto returnVisitor = new VisitorReturnDto();
+        return visitorRepository.findById(id).map(visitor -> {
+            returnVisitor.setId(visitor.getId());
+            returnVisitor.setFirstName(visitor.getFirstName());
+            returnVisitor.setLastName(visitor.getLastName());
+            returnVisitor.setReviews(visitor.getReviews());
+            return returnVisitor;
+        }).orElseThrow();
     }
 
     @PutMapping("/{id}")
-    public @ResponseBody
-    Visitor updateVisitor(@PathVariable Integer id, @RequestBody Visitor updateVisitor) {
+    public Visitor updateVisitor(@PathVariable Integer id, @RequestBody Visitor updateVisitor) {
         return visitorRepository.findById(id)
                 .map(visitor -> {
                     visitor.setFirstName(updateVisitor.getFirstName());
@@ -45,8 +53,7 @@ public class VisitorController {
     }
 
     @DeleteMapping("/{id}")
-    public @ResponseBody
-    void deleteVisitor(@PathVariable Integer id) {
+    public void deleteVisitor(@PathVariable Integer id) {
         visitorRepository.deleteById(id);
     }
 }

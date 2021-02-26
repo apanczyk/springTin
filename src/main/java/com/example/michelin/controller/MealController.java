@@ -1,5 +1,6 @@
 package com.example.michelin.controller;
 
+import com.example.michelin.dto.MealReturnDto;
 import com.example.michelin.model.Meal;
 import com.example.michelin.repository.MealRepository;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -20,21 +21,24 @@ public class MealController {
     }
 
     @PostMapping()
-    public @ResponseBody
-    Meal createMeal(@RequestBody Meal newMeal){
+    public Meal createMeal(@RequestBody Meal newMeal){
         return mealRepository.save(newMeal);
     }
 
     @GetMapping("/{id}")
-    public @ResponseBody
-    Meal getMealById(@PathVariable Integer id) {
-        return mealRepository.findById(id)
-                .orElseThrow();
+    public MealReturnDto getMealById(@PathVariable Integer id) {
+        MealReturnDto returnMeal = new MealReturnDto();
+        return mealRepository.findById(id).map(meal -> {
+            returnMeal.setId(meal.getId());
+            returnMeal.setName(meal.getName());
+            returnMeal.setDescription(meal.getDescription());
+            returnMeal.setReviews(meal.getReviews());
+            return returnMeal;
+        }).orElseThrow();
     }
 
     @PutMapping("/{id}")
-    public @ResponseBody
-    Meal updateMeal(@PathVariable Integer id, @RequestBody Meal updateMeal) {
+    public Meal updateMeal(@PathVariable Integer id, @RequestBody Meal updateMeal) {
         return mealRepository.findById(id)
                 .map(meal -> {
                     meal.setName(updateMeal.getName());
@@ -47,8 +51,7 @@ public class MealController {
     }
 
     @DeleteMapping("/{id}")
-    public @ResponseBody
-    void deleteMeal(@PathVariable Integer id) {
+    public void deleteMeal(@PathVariable Integer id) {
         mealRepository.deleteById(id);
     }
 }
