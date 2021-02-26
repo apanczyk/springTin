@@ -1,15 +1,24 @@
 package com.example.michelin.model;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 import javax.persistence.*;
+import java.util.Set;
 
 @Entity
 public class Visitor {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private String firstName;
     private String lastName;
+    @OneToMany(mappedBy = "visitor")
+    @JsonIgnore
+    private Set<Review> reviews;
+
+    public Visitor() {
+    }
 
     public Integer getId() {
         return id;
@@ -35,5 +44,11 @@ public class Visitor {
         this.lastName = lastName;
     }
 
+    public Set<Review> getReviews() {
+        return reviews;
+    }
 
+    public void setReviews(Set<Review> reviews) {
+        this.reviews = reviews;
+    }
 }

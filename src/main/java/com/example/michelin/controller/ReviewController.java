@@ -1,56 +1,68 @@
 package com.example.michelin.controller;
 
+import com.example.michelin.dto.ReviewDto;
 import com.example.michelin.model.Review;
+import com.example.michelin.repository.MealRepository;
 import com.example.michelin.repository.ReviewRepository;
+import com.example.michelin.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
+
+import java.util.List;
 
 @RestController
 @RequestMapping("api/reviews")
 public class ReviewController {
     @Autowired
     private ReviewRepository reviewRepository;
+    @Autowired
+    private MealRepository mealRepository;
+    @Autowired
+    private VisitorRepository visitorRepository;
 
     @GetMapping()
     public @ResponseBody
-    Iterable<Review> getReviews(){
+    List<Review> getReviews(){
         return reviewRepository.findAll();
     }
 
     @PostMapping()
-    public @ResponseBody
-    Review createReview(@RequestBody Review newVisitor){
-        return reviewRepository.save(newVisitor);
+    public Review createReview(@RequestBody ReviewDto newReview){
+        Review review = new Review(newReview.getRate(), newReview.getDate(), newReview.getMessage());
+        return visitorRepository.findById(newReview.getVisitorId()).map(visitor -> {
+            review.setVisitor(visitor);
+            return mealRepository.findById(newReview.getMealId()).map(meal -> {
+                review.setMeal(meal);
+                return reviewRepository.save(review);
+            }).orElseThrow(() -> new RuntimeException());
+        }).orElseThrow(() -> new RuntimeException());
     }
 
     @GetMapping("/{id}")
-    public @ResponseBody
-    Review getReviewById(@PathVariable Integer id) {
+    public Review getReviewById(@PathVariable Integer id) {
         return reviewRepository.findById(id)
                 .orElseThrow();
     }
 
     @PutMapping("/{id}")
-    public @ResponseBody
-    Review updateReview(@PathVariable Integer id, @RequestBody Review updateReview) {
+    public Review updateReview(@PathVariable Integer id, @RequestBody ReviewDto updateReview) {
         return reviewRepository.findById(id)
                 .map(review -> {
                     review.setRate(updateReview.getRate());
                     review.setDate(updateReview.getDate());
                     review.setMessage(updateReview.getMessage());
-                    review.setVisitor(updateReview.getVisitor());
-                    review.setMeal(updateReview.getMeal());
-                    return reviewRepository.save(review);
-                }).orElseGet(() -> {
-                    updateReview.setId(id);
-                    return reviewRepository.save(updateReview);
-                });
+                    return mealRepository.findById(updateReview.getMealId()).map(meal -> {
+                        review.setMeal(meal);
+                        return visitorRepository.findById(updateReview.getVisitorId()).map(visitor -> {
+                            review.setVisitor(visitor);
+                            return reviewRepository.save(review);
+                        }).orElseThrow();
+                    }).orElseThrow();
+                }).orElseThrow();
     }
 
     @DeleteMapping("/{id}")
-    public @ResponseBody
-    void deleteReview(@PathVariable Integer id) {
+    public void deleteReview(@PathVariable Integer id) {
         reviewRepository.deleteById(id);
     }
 }

@@ -7,17 +7,29 @@ import java.util.Date;
 public class Review {
 
     @Id
-    @GeneratedValue(strategy = GenerationType.AUTO)
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
     private Integer id;
     private Integer rate;
     private Date date;
     private String message;
 
     @ManyToOne()
+    @JoinColumn(name = "meal_id", referencedColumnName = "id")
     private Meal meal;
 
     @ManyToOne()
+    @JoinColumn(name = "visitor_id", referencedColumnName = "id")
     private Visitor visitor;
+
+    public Review(Integer rate, Date date, String message) {
+        this.rate = rate;
+        this.date = date;
+        this.message = message;
+    }
+
+    public Review() {
+
+    }
 
     public Integer getId() {
         return id;

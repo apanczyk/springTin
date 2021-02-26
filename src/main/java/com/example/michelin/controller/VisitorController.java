@@ -3,7 +3,6 @@ package com.example.michelin.controller;
 import com.example.michelin.model.Visitor;
 import com.example.michelin.repository.VisitorRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
@@ -26,8 +25,7 @@ public class VisitorController {
     }
 
     @GetMapping("/{id}")
-    public @ResponseBody
-    Visitor getVisitorById(@PathVariable Integer id) {
+    public Visitor getVisitorById(@PathVariable Integer id) {
         return visitorRepository.findById(id)
                 .orElseThrow();
     }

@@ -3,7 +3,6 @@ package com.example.michelin.controller;
 import com.example.michelin.model.Meal;
 import com.example.michelin.repository.MealRepository;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.*;
 
 import java.util.List;
