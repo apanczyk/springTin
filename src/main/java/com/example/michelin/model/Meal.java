@@ -13,7 +13,7 @@ public class Meal {
     private Integer id;
     private String name;
     private String description;
-    @OneToMany(mappedBy = "meal")
+    @OneToMany(mappedBy = "meal", cascade = CascadeType.ALL)
     @JsonIgnore
     private Set<Review> reviews;
 
